@@ -38,7 +38,7 @@ export function NewPlayer() {
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && start()}
             placeholder="Je naam"
-            className="mt-2 w-full rounded-2xl border-2 border-poke-navy/60 bg-white px-4 py-3 text-2xl font-semibold outline-none focus:border-poke-blue focus:ring-4 focus:ring-poke-blue/20"
+            className="mt-2 w-full rounded-2xl border-2 border-poke-navy/60 bg-white px-4 py-3 text-2xl md:text-3xl font-semibold outline-none focus:border-poke-blue focus:ring-4 focus:ring-poke-blue/20"
           />
         </label>
 
@@ -57,12 +57,14 @@ export function NewPlayer() {
                     : 'border-poke-navy/30 bg-white hover:border-poke-navy/70 hover:-translate-y-1'
                 }`}
               >
-                <PokemonImage
-                  src={artworkUrl(p.id)}
-                  alt={p.name}
-                  size={96}
-                  className={selected ? 'anim-float' : ''}
-                />
+                <div className="aspect-square w-24 md:w-32">
+                  <PokemonImage
+                    src={artworkUrl(p.id)}
+                    alt={p.name}
+                    fluid
+                    className={selected ? 'anim-float' : ''}
+                  />
+                </div>
                 <span className="mt-1 font-bold">{p.name}</span>
               </button>
             )

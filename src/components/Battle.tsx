@@ -207,159 +207,160 @@ function Arena({ profile }: { profile: Profile }) {
           : 'anim-attack-opponent'
         : 'anim-float'
 
+  const showQuestion = (phase === 'question' || phase === 'feedback') && question && opponent
+
   return (
-    <Page>
+    <Page wide className="battle-page">
       <header className="flex items-center justify-between">
         <LinkButton href={`/player/${profile.id}`} variant="ghost">
           ‹ Stop
         </LinkButton>
-        <div className="flex items-center gap-4 text-xl font-bold">
+        <div className="flex items-center gap-4 text-xl font-bold md:text-2xl">
           {streak >= 2 && <span className="anim-pop">🔥 {streak}</span>}
           <span>⭐ {profile.score}</span>
         </div>
       </header>
 
-      {/* Arena */}
-      <Card className="mt-3 overflow-hidden bg-gradient-to-b from-sky-100 to-lime-100 p-4">
-        {phase === 'loading' || !opponent ? (
-          <Loading text="Een wilde Pokémon verschijnt…" />
-        ) : (
-          <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 sm:grid-cols-2">
-            <InfoBox
-              name={opponent.name}
-              types={opponent.types}
-              extra={<HpBar hp={oppHp} max={oppMax} />}
-            />
-            <div className="flex items-end justify-center">
-              <PokemonImage
-                key={opponent.id}
+      {/* Portrait: arena above the question. Landscape tablet (lg): side by side, no scrolling. */}
+      <div className="mt-3 grid flex-1 grid-cols-1 gap-3 md:gap-4 lg:grid-cols-2 lg:items-stretch">
+        <Card className="flex flex-col justify-center overflow-hidden bg-gradient-to-b from-sky-100 to-lime-100 p-3 sm:p-4">
+          {phase === 'loading' || !opponent ? (
+            <Loading text="Een wilde Pokémon verschijnt…" />
+          ) : (
+            <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-2 sm:grid-cols-2">
+              <InfoBox
+                name={opponent.name}
+                types={opponent.types}
+                extra={<HpBar hp={oppHp} max={oppMax} />}
+              />
+              <Sprite
+                key={`opp-${opponent.id}`}
                 src={opponent.sprite}
                 alt={opponent.name}
-                size={150}
-                pixelated
-                className={opponentAnim}
+                anim={opponentAnim}
+              />
+
+              <Sprite
+                key={`me-${player?.id ?? 'loading'}`}
+                src={player?.spriteBack}
+                alt={player?.name ?? ''}
+                anim={playerAnim}
+              />
+              <InfoBox
+                name={player?.name ?? '…'}
+                types={player?.types ?? []}
+                extra={
+                  <>
+                    <Hearts hearts={hearts} />
+                    {player && (
+                      <XpBar
+                        xp={owned.xp}
+                        needed={xpToEvolve(player.stage)}
+                        canEvolve={player.evolvesTo.length > 0}
+                      />
+                    )}
+                  </>
+                }
               />
             </div>
+          )}
+        </Card>
 
-            <div className="flex items-end justify-center">
-              {player ? (
-                <PokemonImage
-                  key={player.id}
-                  src={player.spriteBack}
-                  alt={player.name}
-                  size={150}
-                  pixelated
-                  className={playerAnim}
-                />
-              ) : (
-                <div style={{ width: 150, height: 150 }} />
-              )}
-            </div>
-            <InfoBox
-              name={player?.name ?? '…'}
-              types={player?.types ?? []}
-              extra={
-                <>
-                  <Hearts hearts={hearts} />
-                  {player && (
-                    <XpBar
-                      xp={owned.xp}
-                      needed={xpToEvolve(player.stage)}
-                      canEvolve={player.evolvesTo.length > 0}
-                    />
-                  )}
-                </>
-              }
-            />
-          </div>
-        )}
-      </Card>
-
-      {/* Question / result panel */}
-      <Card className="mt-4 p-5">
-        {(phase === 'question' || phase === 'feedback') && question && opponent && (
-          <>
-            <p className="text-center text-sm font-semibold uppercase tracking-wide text-poke-navy/60">
-              {opponent.name} vraagt · {OPERATION_LABELS[question.op]}
-            </p>
-            <p className="mt-2 text-center text-5xl font-bold sm:text-6xl">{question.text} = ?</p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              {question.choices.map((choice) => (
-                <ChoiceButton
-                  key={choice}
-                  value={choice}
-                  answer={question.answer}
-                  feedback={feedback}
-                  onClick={() => answer(choice)}
-                />
-              ))}
-            </div>
-            <p className="mt-4 min-h-8 text-center text-lg font-semibold">
-              {feedback ? (
-                feedback.correct ? (
-                  <span className="text-green-700">
-                    Goed zo! {player?.name} valt aan!{' '}
-                    {feedback.effective && <span className="text-poke-red">Super effectief!</span>}
-                  </span>
-                ) : (
-                  <span className="text-poke-red">
-                    Oei! Het juiste antwoord was {question.answer}. {opponent.name} valt aan!
-                  </span>
-                )
-              ) : (
-                <span className="text-poke-navy/50">Kies het juiste antwoord</span>
-              )}
-            </p>
-          </>
-        )}
-
-        {phase === 'won' && opponent && (
-          <div className="flex flex-col items-center text-center anim-pop">
-            <p className="text-3xl font-bold">🏆 Je hebt {opponent.name} verslagen!</p>
-            <p className="mt-1 text-lg text-poke-navy/70">+50 punten</p>
-            {caughtNew ? (
-              <div className="mt-4 flex flex-col items-center">
-                <PokemonImage src={opponent.artwork} alt="" size={120} className="anim-float" />
-                <p className="text-2xl font-bold text-poke-red">
-                  Gevangen! {opponent.name} is nu van jou.
-                </p>
+        <Card className="flex flex-col justify-center p-4 sm:p-5">
+          {showQuestion && (
+            <>
+              <p className="text-center text-sm font-semibold uppercase tracking-wide text-poke-navy/60 md:text-base">
+                {opponent.name} vraagt · {OPERATION_LABELS[question.op]}
+              </p>
+              <p className="mt-2 text-center text-[clamp(2.5rem,9vw,4.5rem)] font-bold leading-tight lg:text-[clamp(2.5rem,4.5vw,4.5rem)]">
+                {question.text} = ?
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3 md:mt-5 md:gap-4">
+                {question.choices.map((choice) => (
+                  <ChoiceButton
+                    key={choice}
+                    value={choice}
+                    answer={question.answer}
+                    feedback={feedback}
+                    onClick={() => answer(choice)}
+                  />
+                ))}
               </div>
-            ) : (
-              <p className="mt-3 text-poke-navy/70">Je had {opponent.name} al in je team.</p>
-            )}
-            <Button size="xl" className="mt-6" onClick={startBattle}>
-              Volgende tegenstander ›
-            </Button>
-          </div>
-        )}
+              <p className="mt-3 min-h-8 text-center text-lg font-semibold md:mt-4 md:text-xl">
+                {feedback ? (
+                  feedback.correct ? (
+                    <span className="text-green-700">
+                      Goed zo! {player?.name} valt aan!{' '}
+                      {feedback.effective && (
+                        <span className="text-poke-red">Super effectief!</span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-poke-red">
+                      Oei! Het juiste antwoord was {question.answer}. {opponent.name} valt aan!
+                    </span>
+                  )
+                ) : (
+                  <span className="text-poke-navy/50">Kies het juiste antwoord</span>
+                )}
+              </p>
+            </>
+          )}
 
-        {phase === 'lost' && (
-          <div className="flex flex-col items-center text-center anim-pop">
-            <p className="text-3xl font-bold">😵 {player?.name ?? 'Je Pokémon'} is uitgeput…</p>
-            <p className="mt-2 text-lg text-poke-navy/70">Geen zorgen, probeer het nog eens!</p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button size="xl" onClick={startBattle}>
-                Opnieuw proberen
+          {phase === 'won' && opponent && (
+            <div className="flex flex-col items-center text-center anim-pop">
+              <p className="text-2xl font-bold md:text-3xl">
+                🏆 Je hebt {opponent.name} verslagen!
+              </p>
+              <p className="mt-1 text-lg text-poke-navy/70">+50 punten</p>
+              {caughtNew ? (
+                <div className="mt-3 flex flex-col items-center">
+                  <div className="aspect-square w-[min(30vw,140px)] lg:w-[min(12vw,22vh)]">
+                    <PokemonImage src={opponent.artwork} alt="" fluid className="anim-float" />
+                  </div>
+                  <p className="text-xl font-bold text-poke-red md:text-2xl">
+                    Gevangen! {opponent.name} is nu van jou.
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-3 text-poke-navy/70">Je had {opponent.name} al in je team.</p>
+              )}
+              <Button size="xl" className="mt-5 w-full sm:w-auto" onClick={startBattle}>
+                Volgende tegenstander ›
               </Button>
-              <LinkButton href={`/player/${profile.id}`} variant="secondary" size="lg">
-                Ander Pokémon kiezen
-              </LinkButton>
             </div>
-          </div>
-        )}
+          )}
 
-        {phase === 'error' && (
-          <div className="flex flex-col items-center text-center">
-            <p className="text-2xl font-bold">Oeps, de Pokémon kwamen niet opdagen.</p>
-            <p className="mt-2 text-poke-navy/70">{error}</p>
-            <Button size="lg" className="mt-6" onClick={startBattle}>
-              Probeer opnieuw
-            </Button>
-          </div>
-        )}
+          {phase === 'lost' && (
+            <div className="flex flex-col items-center text-center anim-pop">
+              <p className="text-2xl font-bold md:text-3xl">
+                😵 {player?.name ?? 'Je Pokémon'} is uitgeput…
+              </p>
+              <p className="mt-2 text-lg text-poke-navy/70">Geen zorgen, probeer het nog eens!</p>
+              <div className="mt-5 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                <Button size="xl" onClick={startBattle}>
+                  Opnieuw proberen
+                </Button>
+                <LinkButton href={`/player/${profile.id}`} variant="secondary" size="lg">
+                  Ander Pokémon kiezen
+                </LinkButton>
+              </div>
+            </div>
+          )}
 
-        {(phase === 'loading' || phase === 'evolving') && <Loading />}
-      </Card>
+          {phase === 'error' && (
+            <div className="flex flex-col items-center text-center">
+              <p className="text-2xl font-bold">Oeps, de Pokémon kwamen niet opdagen.</p>
+              <p className="mt-2 text-poke-navy/70">{error}</p>
+              <Button size="lg" className="mt-6" onClick={startBattle}>
+                Probeer opnieuw
+              </Button>
+            </div>
+          )}
+
+          {(phase === 'loading' || phase === 'evolving') && <Loading />}
+        </Card>
+      </div>
 
       {phase === 'evolving' && evolution && (
         <EvolutionOverlay
@@ -368,6 +369,17 @@ function Arena({ profile }: { profile: Profile }) {
         />
       )}
     </Page>
+  )
+}
+
+/** Battle sprite that scales with the screen: phone width, tablet width, or landscape height. */
+function Sprite({ src, alt, anim }: { src?: string; alt: string; anim: string }) {
+  return (
+    <div className="flex items-end justify-center">
+      <div className="aspect-square w-[min(38vw,150px)] md:w-[220px] lg:w-[min(20vw,32vh)]">
+        {src && <PokemonImage src={src} alt={alt} fluid pixelated className={anim} />}
+      </div>
+    </div>
   )
 }
 
@@ -383,7 +395,7 @@ function InfoBox({
   return (
     <div className="self-center rounded-2xl border-2 border-poke-navy/60 bg-white/90 p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <p className="text-xl font-bold">{name}</p>
+        <p className="text-xl font-bold md:text-2xl">{name}</p>
         {types.map((t) => (
           <TypeBadge key={t} type={t} />
         ))}
@@ -399,7 +411,7 @@ function HpBar({ hp, max }: { hp: number; max: number }) {
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs font-bold text-poke-navy/60">HP</span>
-      <div className="h-3 flex-1 overflow-hidden rounded-full bg-poke-navy/15">
+      <div className="h-3 flex-1 overflow-hidden rounded-full bg-poke-navy/15 md:h-4">
         <div
           className={`h-full rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${ratio * 100}%` }}
@@ -414,7 +426,7 @@ function HpBar({ hp, max }: { hp: number; max: number }) {
 
 function Hearts({ hearts }: { hearts: number }) {
   return (
-    <div className="flex gap-1 text-xl">
+    <div className="flex gap-1 text-xl md:text-2xl">
       {Array.from({ length: PLAYER_HEARTS }, (_, i) => (
         <span key={i} className={i < hearts ? '' : 'opacity-30 grayscale'}>
           ❤️
@@ -431,7 +443,7 @@ function XpBar({ xp, needed, canEvolve }: { xp: number; needed: number; canEvolv
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs font-bold text-poke-navy/60">XP</span>
-      <div className="h-3 flex-1 overflow-hidden rounded-full bg-poke-navy/15">
+      <div className="h-3 flex-1 overflow-hidden rounded-full bg-poke-navy/15 md:h-4">
         <div
           className="h-full rounded-full bg-poke-blue transition-all duration-500"
           style={{ width: `${Math.min(100, (xp / needed) * 100)}%` }}
@@ -471,7 +483,7 @@ function ChoiceButton({
       type="button"
       disabled={feedback !== null}
       onClick={onClick}
-      className={`rounded-2xl border-2 px-4 py-5 text-4xl font-bold transition-all disabled:pointer-events-none ${look}`}
+      className={`min-h-[4.5rem] touch-manipulation select-none rounded-2xl border-2 px-4 py-3 text-4xl font-bold transition-all disabled:pointer-events-none md:min-h-24 md:text-5xl lg:min-h-[max(4.5rem,12vh)] ${look}`}
     >
       {value}
     </button>
@@ -488,7 +500,7 @@ function EvolutionOverlay({ evolution, onDone }: { evolution: Evolution; onDone:
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-poke-navy/95 p-6 text-center text-white">
-      <p className="text-2xl font-bold">
+      <p className="text-2xl font-bold md:text-3xl">
         {revealed ? (
           <>
             {evolution.from.name} is geëvolueerd tot{' '}
@@ -498,25 +510,25 @@ function EvolutionOverlay({ evolution, onDone }: { evolution: Evolution; onDone:
           <>Wat? {evolution.from.name} evolueert!</>
         )}
       </p>
-      <div className="mt-8 flex h-56 items-center justify-center">
+      <div className="mt-6 flex aspect-square w-[min(60vw,45vh)] items-center justify-center md:mt-8">
         {revealed ? (
           <PokemonImage
             src={evolution.to.artwork}
             alt={evolution.to.name}
-            size={220}
+            fluid
             className="anim-evolve-reveal"
           />
         ) : (
           <PokemonImage
             src={evolution.from.artwork}
             alt={evolution.from.name}
-            size={220}
+            fluid
             className="anim-evolve-glow"
           />
         )}
       </div>
       {revealed && (
-        <Button size="xl" className="mt-10 anim-pop" onClick={onDone}>
+        <Button size="xl" className="mt-8 anim-pop md:mt-10" onClick={onDone}>
           Geweldig! ›
         </Button>
       )}

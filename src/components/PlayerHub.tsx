@@ -72,7 +72,7 @@ function Hub({ profile }: { profile: Profile }) {
 
       <h1 className="mt-4 text-4xl font-bold">Hallo {profile.name}!</h1>
 
-      <Card className="mt-4 grid grid-cols-2 gap-3 p-4 sm:grid-cols-5">
+      <Card className="mt-4 grid grid-cols-3 gap-3 p-4 sm:grid-cols-5">
         <Stat label="Punten" value={profile.score} icon="⭐" />
         <Stat label="Gewonnen" value={profile.battlesWon} icon="🏆" />
         <Stat label="Juist" value={profile.correct} icon="✅" />
@@ -96,7 +96,7 @@ function Hub({ profile }: { profile: Profile }) {
         Jouw Pokémon <span className="text-poke-navy/50">({profile.team.length})</span>
       </h2>
       <p className="text-sm text-poke-navy/70">Tik op een Pokémon om ermee te vechten.</p>
-      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {profile.team.map((owned) => (
           <TeamCard
             key={owned.uid}
@@ -148,12 +148,14 @@ function TeamCard({
           ACTIEF
         </span>
       )}
-      <PokemonImage
-        src={info?.artwork ?? ''}
-        alt={info?.name ?? ''}
-        size={96}
-        className={active ? 'anim-float' : ''}
-      />
+      <div className="aspect-square w-24 md:w-32">
+        <PokemonImage
+          src={info?.artwork ?? ''}
+          alt={info?.name ?? ''}
+          fluid
+          className={active ? 'anim-float' : ''}
+        />
+      </div>
       <span className="mt-1 text-lg font-bold">{info?.name ?? '…'}</span>
       <span className="mt-1 flex flex-wrap justify-center gap-1">
         {info?.types.map((t) => (

@@ -17,14 +17,15 @@ const VARIANTS: Record<Variant, string> = {
   ghost: 'bg-transparent text-poke-navy border-transparent hover:bg-white/60'
 }
 
+// Minimum 44px tall so every button is a comfortable touch target on a tablet.
 const SIZES: Record<Size, string> = {
-  md: 'px-4 py-2 text-base rounded-xl',
-  lg: 'px-6 py-3 text-xl rounded-2xl',
-  xl: 'px-8 py-4 text-2xl rounded-2xl'
+  md: 'min-h-11 px-4 py-2 text-base rounded-xl',
+  lg: 'min-h-14 px-6 py-3 text-xl rounded-2xl',
+  xl: 'min-h-16 px-8 py-4 text-2xl rounded-2xl'
 }
 
 function buttonClass(variant: Variant, size: Size, extra?: string) {
-  return `inline-flex items-center justify-center gap-2 font-bold border-2 transition-all select-none disabled:opacity-50 disabled:pointer-events-none ${VARIANTS[variant]} ${SIZES[size]} ${extra ?? ''}`
+  return `inline-flex items-center justify-center gap-2 font-bold border-2 transition-all select-none touch-manipulation disabled:opacity-50 disabled:pointer-events-none ${VARIANTS[variant]} ${SIZES[size]} ${extra ?? ''}`
 }
 
 export function Button({
@@ -66,28 +67,43 @@ export function TypeBadge({ type }: { type: string }) {
   )
 }
 
+/**
+ * Pokémon picture. Pass `size` for a fixed pixel size, or `fluid` to fill the parent
+ * (the parent then decides the size, e.g. with a responsive `w-[...]` + `aspect-square`).
+ */
 export function PokemonImage({
   src,
   alt,
   size = 96,
+  fluid = false,
   pixelated = false,
   className
 }: {
   src: string
   alt: string
   size?: number
+  fluid?: boolean
   pixelated?: boolean
   className?: string
 }) {
+  if (!src) {
+    return (
+      <div
+        className={fluid ? 'h-full w-full' : ''}
+        style={fluid ? undefined : { width: size, height: size }}
+        aria-hidden
+      />
+    )
+  }
   return (
     <img
       src={src}
       alt={alt}
-      width={size}
-      height={size}
+      width={fluid ? undefined : size}
+      height={fluid ? undefined : size}
       draggable={false}
-      className={`${pixelated ? 'pixelated' : ''} select-none ${className ?? ''}`}
-      style={{ width: size, height: size, objectFit: 'contain' }}
+      className={`${pixelated ? 'pixelated' : ''} select-none ${fluid ? 'h-full w-full' : ''} ${className ?? ''}`}
+      style={fluid ? { objectFit: 'contain' } : { width: size, height: size, objectFit: 'contain' }}
     />
   )
 }
@@ -113,9 +129,22 @@ export function Loading({ text = 'Even geduld…' }: { text?: string }) {
   )
 }
 
-export function Page({ children, className }: { children: ReactNode; className?: string }) {
+/** Page container. `wide` gives the battle screen room on a landscape tablet. */
+export function Page({
+  children,
+  className,
+  wide = false
+}: {
+  children: ReactNode
+  className?: string
+  wide?: boolean
+}) {
   return (
-    <main className={`mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 ${className ?? ''}`}>
+    <main
+      className={`mx-auto flex w-full flex-1 flex-col px-4 py-4 sm:px-6 md:py-6 ${
+        wide ? 'max-w-6xl' : 'max-w-3xl'
+      } ${className ?? ''}`}
+    >
       {children}
     </main>
   )

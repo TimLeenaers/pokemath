@@ -16,11 +16,39 @@ body {
 body {
   font-family: var(--font-sans);
   color: #1b3c74;
+  /* Tablet: keep the page inside the safe area (notch / home indicator) and stop rubber-band zoom. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
   background:
     radial-gradient(circle at 20% 0%, #fff6b3 0, transparent 40%),
     radial-gradient(circle at 90% 20%, #c9e8ff 0, transparent 45%),
     linear-gradient(180deg, #eaf6ff 0%, #f7fbff 60%, #ffffff 100%);
   background-attachment: fixed;
+}
+
+/* Every tappable element: no 300ms double-tap-to-zoom delay, no text selection while playing. */
+button,
+a,
+label,
+input {
+  touch-action: manipulation;
+}
+button,
+a,
+label {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Landscape tablet: the battle screen should fit on one screen, so trim vertical padding. */
+@media (orientation: landscape) and (max-height: 900px) {
+  .battle-page {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
 }
 
 .pixelated {

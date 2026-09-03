@@ -13,7 +13,7 @@ export function Home() {
       <header className="mt-6 mb-8 flex flex-col items-center text-center">
         <div className="flex items-center gap-3">
           <Pokeball size={48} className="anim-spin-slow" />
-          <h1 className="text-5xl font-bold tracking-tight text-poke-navy drop-shadow-[0_3px_0_#ffcb05]">
+          <h1 className="text-4xl font-bold sm:text-5xl md:text-6xl tracking-tight text-poke-navy drop-shadow-[0_3px_0_#ffcb05]">
             Poké Math
           </h1>
         </div>
@@ -40,7 +40,7 @@ export function Home() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-2xl font-bold">{profile.name}</p>
                       <p className="text-sm text-poke-navy/70">
-                        ⭐ {profile.score} punten · {profile.team.length} Pokémon
+                        ⭐ {profile.score} · {profile.team.length} Pokémon
                       </p>
                     </div>
                     <span className="text-3xl transition-transform group-hover:translate-x-1">

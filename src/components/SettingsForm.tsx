@@ -84,7 +84,7 @@ function Form({ profile, next }: { profile: Profile; next?: string }) {
         Kies één bewerking, of vink er meerdere aan om te mixen.
       </p>
 
-      <div className="mt-5 flex flex-col gap-4">
+      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         {OPERATION_ORDER.map((op) => {
           const enabled = settings.operations.includes(op)
           return (
@@ -94,7 +94,7 @@ function Form({ profile, next }: { profile: Profile; next?: string }) {
                   type="checkbox"
                   checked={enabled}
                   onChange={() => toggleOperation(op)}
-                  className="h-6 w-6 accent-poke-red"
+                  className="h-7 w-7 accent-poke-red"
                 />
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-poke-yellow text-2xl font-bold">
                   {OPERATION_SYMBOLS[op]}
@@ -160,9 +160,11 @@ function Form({ profile, next }: { profile: Profile; next?: string }) {
         <p className="mt-4 text-center font-semibold text-poke-red">Kies minstens één bewerking.</p>
       )}
 
-      <Button size="xl" className="mt-6 w-full" disabled={!valid} onClick={save}>
-        {next === 'play' ? '⚔️ Opslaan en spelen!' : 'Opslaan'}
-      </Button>
+      <div className="sticky bottom-3 mt-6">
+        <Button size="xl" className="w-full" disabled={!valid} onClick={save}>
+          {next === 'play' ? '⚔️ Opslaan en spelen!' : 'Opslaan'}
+        </Button>
+      </div>
     </Page>
   )
 }
@@ -185,7 +187,7 @@ function PillGroup({
             key={value}
             type="button"
             onClick={() => onToggle(value)}
-            className={`min-w-14 rounded-xl border-2 px-3 py-2 text-lg font-bold transition-all ${
+            className={`min-h-12 min-w-16 rounded-xl border-2 px-4 py-2 text-xl font-bold transition-all ${
               on
                 ? 'border-poke-navy bg-poke-blue text-white shadow-[0_3px_0_#1b3c74]'
                 : 'border-poke-navy/30 bg-white text-poke-navy hover:border-poke-navy/70'

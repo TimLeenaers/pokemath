@@ -11,13 +11,18 @@ const fredoka = Fredoka({
 export const metadata: Metadata = {
   title: 'Poké Math',
   description:
-    'Reken je Pokémon naar de overwinning! Optellen, aftrekken, vermenigvuldigen en delen.'
+    'Reken je Pokémon naar de overwinning! Optellen, aftrekken, vermenigvuldigen en delen.',
+  appleWebApp: { capable: true, title: 'Poké Math', statusBarStyle: 'default' }
 }
 
 export const viewport: Viewport = {
   themeColor: '#ffcb05',
   width: 'device-width',
-  initialScale: 1
+  initialScale: 1,
+  // Kids double-tap a lot: keep the page from zooming, and use the full screen on iPad.
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
