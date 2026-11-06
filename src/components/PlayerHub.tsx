@@ -41,8 +41,10 @@ function describeSettings(s: GameSettings): string {
       case 'sub':
         return `${OPERATION_LABELS.sub} tot ${s.subMax}`
       case 'mul':
+        if (s.mulRange === 'free') return 'Vermenigvuldigen vrij tot 1000'
         return `Tafels van ${s.mulTables.join(', ') || '…'}`
       case 'div':
+        if (s.divRange === 'free') return 'Delen vrij tot 1000'
         return `Delen door ${s.divTables.join(', ') || '…'}`
     }
   })
@@ -51,6 +53,10 @@ function describeSettings(s: GameSettings): string {
 
 function Hub({ profile }: { profile: Profile }) {
   const router = useRouter()
+  // Pokédex order: by number, duplicates in the order they were caught.
+  const sortedTeam = [...profile.team].sort(
+    (a, b) => a.pokemonId - b.pokemonId || a.caughtAt - b.caughtAt
+  )
 
   function remove() {
     if (window.confirm(`Speler ${profile.name} verwijderen? Score en Pokémon gaan verloren.`)) {
@@ -97,7 +103,7 @@ function Hub({ profile }: { profile: Profile }) {
       </h2>
       <p className="text-sm text-poke-navy/70">Tik op een Pokémon om ermee te vechten.</p>
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {profile.team.map((owned) => (
+        {sortedTeam.map((owned) => (
           <TeamCard
             key={owned.uid}
             owned={owned}
@@ -156,7 +162,10 @@ function TeamCard({
           className={active ? 'anim-float' : ''}
         />
       </div>
-      <span className="mt-1 text-lg font-bold">{info?.name ?? '…'}</span>
+      <span className="mt-1 text-sm font-bold text-poke-navy/50">
+        #{String(owned.pokemonId).padStart(3, '0')}
+      </span>
+      <span className="text-lg font-bold leading-tight">{info?.name ?? '…'}</span>
       <span className="mt-1 flex flex-wrap justify-center gap-1">
         {info?.types.map((t) => (
           <TypeBadge key={t} type={t} />

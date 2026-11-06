@@ -18,7 +18,14 @@ function read(): Profile[] {
   if (cache) return cache
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
-    cache = raw ? ((JSON.parse(raw) as { profiles: Profile[] }).profiles ?? []) : []
+    const profiles = raw ? ((JSON.parse(raw) as { profiles: Profile[] }).profiles ?? []) : []
+    // Profiles saved by older versions may miss newer settings: fill them with defaults.
+    cache = profiles.map((p) => {
+      const settings = { ...DEFAULT_SETTINGS, ...p.settings }
+      if (settings.mulRange !== 'free') settings.mulRange = 'tables'
+      if (settings.divRange !== 'free') settings.divRange = 'tables'
+      return { ...p, settings }
+    })
   } catch {
     cache = []
   }

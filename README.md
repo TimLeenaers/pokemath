@@ -8,16 +8,18 @@ laat ze evolueren. Optellen, aftrekken, vermenigvuldigen en delen — apart of g
 1. **Speler kiezen** — op het startscherm kies je je naam, of maak je een nieuwe speler aan.
    Meerdere kinderen kunnen op hetzelfde toestel spelen; alles wordt lokaal bewaard (`localStorage`),
    er is geen database of account.
-2. **Starter kiezen** — Bulbasaur, Charmander, Squirtle, Pikachu, Eevee, Jigglypuff, Psyduck of Meowth.
+2. **Starter kiezen** — Bulbasaur, Charmander, Squirtle, Pikachu, Eevee, Jigglypuff, Psyduck, Meowth,
+   Chikorita, Cyndaquil, Totodile of Togepi.
 3. **Moeilijkheid** — per bewerking:
    - Optellen: som tot 10 / 20 / 50 / 100 / 1000
    - Aftrekken: getallen tot 10 / 20 / 50 / 100 / 1000
-   - Vermenigvuldigen: één of meer tafels (1–10)
-   - Delen: delen door één of meer tafels (1–10)
+   - Vermenigvuldigen: één of meer tafels (1–10) tot 100, of vrij tot 1000 (17 × 21 = 357)
+   - Delen: delen door één of meer tafels (1–10) tot 100, of vrij tot 1000 (357 : 17 = 21)
    Meerdere bewerkingen aanvinken = gemixte vragen.
-4. **Vechten** — een willekeurige Pokémon uit de eerste generatie (151) daagt je uit met een som.
+4. **Vechten** — een willekeurige Pokémon uit de eerste twee generaties (Kanto en Johto, 251) daagt je uit met een som.
    Kies uit 4 antwoorden. Juist = jouw Pokémon valt aan (dubbel bij een type-zwakte!),
    fout = je verliest een hartje. Versla de tegenstander en je vangt hem.
+   Je gevangen Pokémon staan gerangschikt op hun Pokédex-nummer.
 5. **Evolueren** — elk juist antwoord geeft XP aan je actieve Pokémon. Na 10 juiste antwoorden
    (20 voor de tweede stap) evolueert hij, met evolutieketens uit PokéAPI.
 

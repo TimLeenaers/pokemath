@@ -7,6 +7,8 @@ import {
   OPERATION_LABELS,
   OPERATION_ORDER,
   OPERATION_SYMBOLS,
+  TABLE_RANGE_LABELS,
+  TABLE_RANGE_OPTIONS,
   TABLE_OPTIONS,
   usableOperations
 } from '@/lib/math'
@@ -32,8 +34,8 @@ export function SettingsForm({ profileId, next }: { profileId: string; next?: st
 const OPERATION_HINTS: Record<Operation, string> = {
   add: 'Optellen tot maximaal…',
   sub: 'Aftrekken van getallen tot…',
-  mul: 'Welke tafels?',
-  div: 'Delen door welke tafels?'
+  mul: 'Hoe moeilijk?',
+  div: 'Hoe moeilijk?'
 }
 
 function Form({ profile, next }: { profile: Profile; next?: string }) {
@@ -118,34 +120,59 @@ function Form({ profile, next }: { profile: Profile; next?: string }) {
                   ) : (
                     <>
                       <PillGroup
-                        options={TABLE_OPTIONS}
-                        selected={op === 'mul' ? settings.mulTables : settings.divTables}
-                        onToggle={(v) => toggleTable(op === 'mul' ? 'mulTables' : 'divTables', v)}
+                        options={TABLE_RANGE_OPTIONS}
+                        format={(v) => TABLE_RANGE_LABELS[op][v]}
+                        selected={[op === 'mul' ? settings.mulRange : settings.divRange]}
+                        onToggle={(v) =>
+                          setSettings((s) =>
+                            op === 'mul' ? { ...s, mulRange: v } : { ...s, divRange: v }
+                          )
+                        }
                       />
-                      <div className="mt-3 flex gap-2">
-                        <Button
-                          variant="ghost"
-                          className="text-sm"
-                          onClick={() =>
-                            setAllTables(op === 'mul' ? 'mulTables' : 'divTables', true)
-                          }
-                        >
-                          Alle tafels
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          className="text-sm"
-                          onClick={() =>
-                            setAllTables(op === 'mul' ? 'mulTables' : 'divTables', false)
-                          }
-                        >
-                          Geen
-                        </Button>
-                      </div>
-                      {incomplete.includes(op) && (
-                        <p className="mt-2 text-sm font-semibold text-poke-red">
-                          Kies minstens één tafel.
+                      {(op === 'mul' ? settings.mulRange : settings.divRange) === 'free' ? (
+                        <p className="mt-3 text-sm text-poke-navy/70">
+                          Alle sommen met een uitkomst tot 1000, zoals{' '}
+                          {op === 'mul' ? '17 × 21 = 357' : '357 : 17 = 21'}. Tafels kiezen is niet
+                          nodig.
                         </p>
+                      ) : (
+                        <>
+                          <p className="mb-2 mt-4 font-semibold text-poke-navy/80">
+                            {op === 'mul' ? 'Welke tafels?' : 'Delen door welke tafels?'}
+                          </p>
+                          <PillGroup
+                            options={TABLE_OPTIONS}
+                            selected={op === 'mul' ? settings.mulTables : settings.divTables}
+                            onToggle={(v) =>
+                              toggleTable(op === 'mul' ? 'mulTables' : 'divTables', v)
+                            }
+                          />
+                          <div className="mt-3 flex gap-2">
+                            <Button
+                              variant="ghost"
+                              className="text-sm"
+                              onClick={() =>
+                                setAllTables(op === 'mul' ? 'mulTables' : 'divTables', true)
+                              }
+                            >
+                              Alle tafels
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              className="text-sm"
+                              onClick={() =>
+                                setAllTables(op === 'mul' ? 'mulTables' : 'divTables', false)
+                              }
+                            >
+                              Geen
+                            </Button>
+                          </div>
+                          {incomplete.includes(op) && (
+                            <p className="mt-2 text-sm font-semibold text-poke-red">
+                              Kies minstens één tafel.
+                            </p>
+                          )}
+                        </>
                       )}
                     </>
                   )}
@@ -169,14 +196,16 @@ function Form({ profile, next }: { profile: Profile; next?: string }) {
   )
 }
 
-function PillGroup({
+function PillGroup<T extends string | number>({
   options,
   selected,
-  onToggle
+  onToggle,
+  format = String
 }: {
-  options: number[]
-  selected: number[]
-  onToggle: (value: number) => void
+  options: T[]
+  selected: T[]
+  onToggle: (value: T) => void
+  format?: (value: T) => string
 }) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -193,7 +222,7 @@ function PillGroup({
                 : 'border-poke-navy/30 bg-white text-poke-navy hover:border-poke-navy/70'
             }`}
           >
-            {value}
+            {format(value)}
           </button>
         )
       })}

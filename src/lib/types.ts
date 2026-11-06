@@ -1,5 +1,11 @@
 export type Operation = 'add' | 'sub' | 'mul' | 'div'
 
+/**
+ * tables = gewone tafels tot 100 (7 × 8)
+ * free   = vrij tot 1000, los van de tafels (17 × 21, 357 : 17)
+ */
+export type TableRange = 'tables' | 'free'
+
 export interface GameSettings {
   /** Which operations may appear. Multiple = mixed questions. */
   operations: Operation[]
@@ -11,6 +17,8 @@ export interface GameSettings {
   mulTables: number[]
   /** Division tables: "delen door" (e.g. [2, 5, 10]). */
   divTables: number[]
+  mulRange: TableRange
+  divRange: TableRange
 }
 
 export interface OwnedPokemon {
@@ -45,7 +53,7 @@ export interface PokemonInfo {
   artwork: string
   /** Attacking types that deal double damage to this Pokémon. */
   weaknesses: string[]
-  /** Next evolutions (Gen 1 only). Empty when fully evolved. */
+  /** Next evolutions (Gen 1–2 only). Empty when fully evolved. */
   evolvesTo: { id: number; name: string }[]
   /** 1 = basic, 2 = first evolution, 3 = second evolution. */
   stage: number

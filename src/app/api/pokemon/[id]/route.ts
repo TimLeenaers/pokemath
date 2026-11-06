@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import type { PokemonInfo } from '@/lib/types'
-import { GEN1_MAX, artworkUrl, spriteBackUrl, spriteUrl } from '@/lib/pokemon'
+import { POKEMON_MAX, artworkUrl, spriteBackUrl, spriteUrl } from '@/lib/pokemon'
 
 /**
  * Wraps the open PokéAPI (https://pokeapi.co) into one compact payload per Pokémon:
- * name, types, sprites, weaknesses and Gen 1 evolutions. Cached for a day on Vercel.
+ * name, types, sprites, weaknesses and Gen 1–2 evolutions. Cached for a day on Vercel.
  */
 export const revalidate = 86400
 
@@ -84,7 +84,7 @@ async function computeWeaknesses(types: string[]): Promise<string[]> {
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const { id: raw } = await context.params
   const id = Number(raw)
-  if (!Number.isInteger(id) || id < 1 || id > GEN1_MAX) {
+  if (!Number.isInteger(id) || id < 1 || id > POKEMON_MAX) {
     return NextResponse.json({ error: 'Onbekende Pokémon' }, { status: 404 })
   }
 
@@ -101,11 +101,11 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
 
     const path = pathTo(chain.chain, id) ?? []
     const current = path[path.length - 1]
-    // Stage counts Gen 1 ancestors only, so Pikachu (whose chain starts at Gen 2's Pichu) is stage 1.
-    const stage = Math.max(1, path.filter((l) => idFromUrl(l.species.url) <= GEN1_MAX).length)
+    // Stage counts Gen 1–2 ancestors only; later-generation baby forms (e.g. Azurill) are ignored.
+    const stage = Math.max(1, path.filter((l) => idFromUrl(l.species.url) <= POKEMON_MAX).length)
     const evolvesTo = (current?.evolves_to ?? [])
       .map((link) => ({ id: idFromUrl(link.species.url), name: capitalize(link.species.name) }))
-      .filter((e) => e.id >= 1 && e.id <= GEN1_MAX)
+      .filter((e) => e.id >= 1 && e.id <= POKEMON_MAX)
 
     const info: PokemonInfo = {
       id,

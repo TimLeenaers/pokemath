@@ -1,5 +1,5 @@
-/** Only Pokémon from the first generation are used. */
-export const GEN1_MAX = 151
+/** Pokémon from the first two generations are used: Kanto (1–151) and Johto (152–251). */
+export const POKEMON_MAX = 251
 
 const SPRITES = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon'
 
@@ -15,7 +15,11 @@ export const STARTERS: { id: number; name: string }[] = [
   { id: 133, name: 'Eevee' },
   { id: 39, name: 'Jigglypuff' },
   { id: 54, name: 'Psyduck' },
-  { id: 52, name: 'Meowth' }
+  { id: 52, name: 'Meowth' },
+  { id: 152, name: 'Chikorita' },
+  { id: 155, name: 'Cyndaquil' },
+  { id: 158, name: 'Totodile' },
+  { id: 175, name: 'Togepi' }
 ]
 
 /** Correct answers needed before a Pokémon of this stage evolves. */
@@ -32,7 +36,7 @@ export const PLAYER_HEARTS = 3
 
 export function randomOpponentId(exclude?: number): number {
   let id = exclude ?? 0
-  while (id === (exclude ?? 0)) id = Math.floor(Math.random() * GEN1_MAX) + 1
+  while (id === (exclude ?? 0)) id = Math.floor(Math.random() * POKEMON_MAX) + 1
   return id
 }
 
